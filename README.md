@@ -15,6 +15,7 @@ Software:
 - access point lib
 - http client lib
 - serverside closebox event
+- ntp client lib
 - time / timezone stuff
 
 
