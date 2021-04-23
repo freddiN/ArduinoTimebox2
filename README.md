@@ -18,6 +18,8 @@ A * means "every day", usable for recurring meetings like Scrum dailies.
 
 Check out the defines at the top of the code to adjust to your needs.
 
+IMPORTANT: Disconnect the servo's ground (=brown wire) before flashing or the flash will fail.
+
 ## Requirements
 
 Hardware:
@@ -32,7 +34,7 @@ Libraries:
 - ArduinoJson from Benoit Blanchon
 
 
-## Requirements
+## Wiring
 
 - Brown servo cable to Wemos ground
 - Red servo cable to Wemos 3.3V
