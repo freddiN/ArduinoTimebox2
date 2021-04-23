@@ -1,6 +1,6 @@
 # Timebox2
 
-Open the box on startup/boot and close it when a configured time is reached.
+Open the box at the beginning of an appointment  and close it upon the end.
 
 It also spawns a tiny webserver and displays a few buttons to play around with the servo.
 
