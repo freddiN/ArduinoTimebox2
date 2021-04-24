@@ -34,7 +34,7 @@ Libraries:
 
 - ESP8266WebServer, ESP8266WiFi and ESP8266HTTPClient via https://arduino.esp8266.com/stable/package_esp8266com_index.json
 - ArduinoJson from Benoit Blanchon
-- noe Servo lib needed!
+- no Servo lib needed
 
 ## Wiring
 
