@@ -2,7 +2,7 @@
 
 Open the box at the beginning of an appointment  and close it upon the end.
 
-It also spawns a tiny webserver and displays a few buttons to play around with the servo:
+It spawns a tiny webserver and displays a few buttons to play around:
 ![image](https://user-images.githubusercontent.com/14030572/115965508-e2aa8400-a529-11eb-8280-4dfb74f9c76d.png)
 
 
@@ -10,7 +10,7 @@ The configuration is fetched from a remote server and looks like this:
 ```json
 {
 "events": [
-    {"start_date":"*", "start_time":"23:01", "end_date":"*","end_time":"22:30"},
+    {"start_date":"*", "start_time":"10:30", "end_date":"*","end_time":"11:00"},
     {"start_date":"23.4.2021", "start_time":"22:29", "end_date":"23.04.2021","end_time":"22:30"},
     {"start_date":"23.4.2021", "start_time":"22:29", "end_date":"23.04.2021","end_time":"22:30"}
   ]
@@ -34,7 +34,7 @@ Libraries:
 
 - ESP8266WebServer, ESP8266WiFi and ESP8266HTTPClient via https://arduino.esp8266.com/stable/package_esp8266com_index.json
 - ArduinoJson from Benoit Blanchon
-
+- noe Servo lib needed!
 
 ## Wiring
 
