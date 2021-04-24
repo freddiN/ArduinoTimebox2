@@ -28,7 +28,7 @@ Hardware:
 
 - Wemos D1 (or clone)
 - Servo (I used a cheap micro SG90 clone)
-- 3D printed box (STLs here)
+- 3D printed box (STLs here: https://www.thingiverse.com/thing:4838367)
 
 Libraries:
 
