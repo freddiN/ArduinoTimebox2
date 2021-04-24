@@ -26,8 +26,13 @@
 }*/
 #define EVENTS_URL "http://192.168.178.24/events.json"
 
-#define INTERVAL 10000 //in ms
-unsigned long time_now = 0;
+#define INTERVAL_CHECK_TIME 10000         //10 seconds in ms
+#define INTERVAL_DOWNLOAD_JSON 36000000   //10 hours in ms
+
+unsigned long time_now_a = 0;
+unsigned long time_now_b = 0;
+
+String strJson = "";
 
 ESP8266WebServer server(80);
 
@@ -47,27 +52,32 @@ void setup() {
 
   configTime(MY_TZ, MY_NTP_SERVER);
 
+  //get the JSON initially
+  updateJson();
+
   Serial.println("Setup done");
 }
 
 void loop() {
   server.handleClient();
 
-  if((unsigned long)(millis() - time_now) > INTERVAL){
-    time_now = millis();
-    checkData();
+  if((unsigned long)(millis() - time_now_a) > INTERVAL_CHECK_TIME){
+    time_now_a = millis();
+    checkTimes();
+  }
+
+  if((unsigned long)(millis() - time_now_b) > INTERVAL_DOWNLOAD_JSON){
+    time_now_b = millis();
+    updateJson();
   }
 }
 
-void checkData() {
-  Serial.println("checkData");
-
-  String strGetData = getData();
-  if (strGetData.length() > 10) {
+void checkTimes() {  
+  if (strJson.length() > 10) {
     Serial.println("i start_date start_time end_date end_time");
     
     DynamicJsonDocument doc(2048);
-    deserializeJson(doc, strGetData);
+    deserializeJson(doc, strJson);
 
     time_t now;
     tm tm;  
@@ -102,7 +112,9 @@ void checkData() {
   }
 }
 
-// 22:29
+/** 
+ *  22:29
+ */
 bool timeMatches(tm tm, String strTime) {
   String strHour   = getValue(strTime, ':', 0);
   String strMinute = getValue(strTime, ':', 1);
@@ -114,8 +126,14 @@ bool timeMatches(tm tm, String strTime) {
   }
 }
 
-// * or 23.04.2021
+/**
+ * 23.04.2021 or *, but never on weekends!
+ */
 bool dateMatches(tm tm, String strDate) {
+  if(tm.tm_wday == 0 || tm.tm_wday == 6) {
+    return false;
+  }
+  
   if (strDate == "*") {
     return true;
   }
@@ -184,18 +202,24 @@ void handleRoot() {
   HTML += getCurrentTime();
   HTML += "<br>\n";
   HTML += "inMeeting: ";
-  HTML += isInMeeting                ;
+  HTML += isInMeeting;
+  HTML += "<br>\n";
+  HTML += "JSON: ";
+  HTML += strJson;
   HTML += "<br>\n";
 
   HTML += "<br>\n";
 
   HTML += "</p>\n";
 
-  HTML += generateForm("0");
-  HTML += generateForm("45");
-  HTML += generateForm("90");
-  HTML += generateForm("135");
-  HTML += generateForm("180");
+  HTML += generateForm("0", "0");
+  HTML += generateForm("45", "45");
+  HTML += generateForm("90", "90");
+  HTML += generateForm("135", "135");
+  HTML += generateForm("180", "180");
+  HTML += generateForm("1000", "Up");
+  HTML += generateForm("2000", "Down");
+  HTML += generateForm("3000", "Update JSON");
 
   HTML += "</body>\n";
   HTML += "</html>\n";
@@ -215,16 +239,20 @@ void handleRoot() {
   if (strAngle.toInt() == 2000) {
     servoDown();
   }
+
+  if (strAngle.toInt() == 3000) {
+    updateJson();
+  }
 }
 
-String generateForm(String strAngle) {
+String generateForm(String strAngle, String strText) {
   String HTML = "";
   HTML += "<form action=\"/\" method=\"GET\">\n";
   HTML += "  <input type=\"hidden\" name=\"angle\" value=\"";
   HTML += strAngle;
   HTML += "\"/>\n";
   HTML += "  <input type=\"submit\" value=\"";
-  HTML += strAngle;
+  HTML += strText;
   HTML +="\">\n";
   HTML += "</form>\n";
   return HTML;
@@ -258,18 +286,15 @@ void connectToWifi() {
   }
 }
 
-String getData() {
-  String strReturn = "";
-  
+void updateJson() {
   HTTPClient http;
   http.begin(EVENTS_URL);
    
   if (http.GET() == 200) {
-    strReturn = http.getString();
+    strJson = http.getString();
   }
    
   http.end();
-  return strReturn;
 }
 
 String getCurrentTime() {
@@ -323,18 +348,18 @@ String getCurrentTime() {
   return TXT;
 }
 
-String getValue(String data, char separator, int index)
-{
-    int found = 0;
-    int strIndex[] = { 0, -1 };
-    int maxIndex = data.length() - 1;
+//String xval = getValue(myString, ':', 0);
+String getValue(String data, char separator, int index){
+  int found = 0;
+  int strIndex[] = { 0, -1 };
+  int maxIndex = data.length() - 1;
 
-    for (int i = 0; i <= maxIndex && found <= index; i++) {
-        if (data.charAt(i) == separator || i == maxIndex) {
-            found++;
-            strIndex[0] = strIndex[1] + 1;
-            strIndex[1] = (i == maxIndex) ? i+1 : i;
-        }
+  for (int i = 0; i <= maxIndex && found <= index; i++) {
+    if (data.charAt(i) == separator || i == maxIndex) {
+      found++;
+      strIndex[0] = strIndex[1] + 1;
+      strIndex[1] = (i == maxIndex) ? i+1 : i;
     }
-    return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+  }
+  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
