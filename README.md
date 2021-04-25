@@ -1,6 +1,6 @@
 # Timebox2
 
-Open the box at the beginning of an appointment  and close it upon the end.
+Open the box at the beginning of an appointment and close it upon the end using a servo.
 
 It spawns a tiny webserver and displays a few buttons to play around:
 ![image](https://user-images.githubusercontent.com/14030572/115965508-e2aa8400-a529-11eb-8280-4dfb74f9c76d.png)
